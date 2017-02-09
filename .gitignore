@@ -8,7 +8,7 @@ proj.win10/
 proj.win32/
 CMakeLists.txt
 .cocos-project.json
-Classes/AppDelegate.cpp
-Classes/AppDelegate.h
-Classes/HelloWorldScene.cpp
-Classes/HelloWorldScene.h
+Classes/AppDelegate.cpp/
+Classes/AppDelegate.h/
+Classes/HelloWorldScene.cpp/
+Classes/HelloWorldScene.h/
