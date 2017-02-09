@@ -1,3 +1,4 @@
+Classes/
 cocos2d/
 proj.android/
 proj.android-studio/
@@ -8,4 +9,3 @@ proj.win10/
 proj.win32/
 CMakeLists.txt
 .cocos-project.json
-Classes/
