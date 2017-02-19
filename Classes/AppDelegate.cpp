@@ -1,5 +1,7 @@
 #include "AppDelegate.h"
+#include "DataManager.h"
 #include "HelloWorldScene.h"
+#include "GameScene.h"
 
 USING_NS_CC;
 
@@ -85,8 +87,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     register_all_packages();
 
+	DataManager* data = new DataManager();
     // create a scene. it's an autorelease object
-    auto scene = HelloWorld::createScene();
+    //auto scene = HelloWorld::create
+	auto scene = GameScene::createScene(data);
 
     // run
     director->runWithScene(scene);
