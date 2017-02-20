@@ -53,6 +53,10 @@ bool GameScene::init() {
 	label->setPosition(Vec2(visibleSize.width /2, visibleSize.height / 2));
 	this->addChild(label);
 
+	auto sp = Sprite::create("chara2.png");
+	sp->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	this->addChild(sp);
+
 	// update‚ð–ˆƒtƒŒ[ƒ€ŽÀs‚·‚é‚æ‚¤‚É“o˜^‚·‚é
 	this->scheduleUpdate();
 	return true;
