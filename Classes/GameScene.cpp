@@ -53,9 +53,34 @@ bool GameScene::init() {
 	label->setPosition(Vec2(visibleSize.width /2, visibleSize.height / 2));
 	this->addChild(label);
 
-	auto sp = Sprite::create("chara2.png");
-	sp->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
-	this->addChild(sp);
+	auto sp = Sprite::create("slime_1_1.png");
+	auto Sp = Sprite::create();
+	Sp->setPosition(Vec2(visibleSize.width / 2.0, visibleSize.height / 2.0));
+
+	// コマをスプライトフレーム配列(frames)に格納する
+	Vector< SpriteFrame * > frames;
+	for (int i = 0; i < 4; i++)
+	{
+		auto rect = Rect(64 * i, 0, 64, 64);
+		auto frame = SpriteFrame::create("slime_1_1.png", rect);
+		frame = SpriteFrame::create("slime_1_2.png", rect);
+		frames.pushBack(frame);
+	}
+
+	// スプライトフレームからアニメーションを作成する　１コマ１秒表示
+	auto anime = Animation::createWithSpriteFrames(frames, 60.0 / 60.0);
+
+	// ４コマアニメーションを無限に繰り返すアクションを作成
+	auto action = RepeatForever::create(Animate::create(anime));
+
+	// アクションをスプライトに実装
+	Sp->runAction(action);
+
+	// シーンに追加
+	this->addChild(Sp);
+
+	//sp->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	//this->addChild(sp);
 
 	// updateを毎フレーム実行するように登録する
 	this->scheduleUpdate();
