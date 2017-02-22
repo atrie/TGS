@@ -53,22 +53,27 @@ bool GameScene::init() {
 	label->setPosition(Vec2(visibleSize.width /2, visibleSize.height / 2));
 	this->addChild(label);
 
-	auto sp = Sprite::create("slime_1_1.png");
+	// ベースとなるスプライトを作成(アニメーションがループするので元画像はいらないはず)
 	auto Sp = Sprite::create();
 	Sp->setPosition(Vec2(visibleSize.width / 2.0, visibleSize.height / 2.0));
 
 	// コマをスプライトフレーム配列(frames)に格納する
 	Vector< SpriteFrame * > frames;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 1; i++)
 	{
-		auto rect = Rect(64 * i, 0, 64, 64);
+		auto rect = Rect(0.1 * i, 0, 64, 64);
 		auto frame = SpriteFrame::create("slime_1_1.png", rect);
-		frame = SpriteFrame::create("slime_1_2.png", rect);
 		frames.pushBack(frame);
 	}
+	for (int i = 0; i < 1; i++)
+	{
+		auto rect = Rect(0.1 * i, 0, 64, 64);
+		auto frame = SpriteFrame::create("slime_1_2.png", rect);
+		frames.pushBack(frame);
 
+	}
 	// スプライトフレームからアニメーションを作成する　１コマ１秒表示
-	auto anime = Animation::createWithSpriteFrames(frames, 60.0 / 60.0);
+	auto anime = Animation::createWithSpriteFrames(frames, 10.0 / 10.0);
 
 	// ４コマアニメーションを無限に繰り返すアクションを作成
 	auto action = RepeatForever::create(Animate::create(anime));
