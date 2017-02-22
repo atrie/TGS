@@ -20,16 +20,23 @@ private:
 	cocos2d::Sprite* BraveSp;		//プレイヤーのスプライト
 
 	float generateRandom(float min, float max);//ランダム変数の初期化
+
 	int BraveAni;	//勇者のアニメーションを切り替えるための変数
+	int EnemysTag;	//敵のタグ
+	int SetTag;		//一番近い敵のタグ
 
 	void BraveAnimation();	//泳ぎアニメーション
 
+	cocos2d::Vector<cocos2d::Sprite *> _enemys;//敵のスプライト：クラス型
+
 	cocos2d::Sprite* addEnemys();//敵精製仮
+
+	cocos2d::Vec2 EnemyPos;//敵のポジション
 
 	CC_SYNTHESIZE(std::mt19937, _engine, Engine);//ランダムの変数
 protected:
-	YashiroScene();							// コンストラクタ
-	virtual ~YashiroScene();					// デストラクタ
+	YashiroScene();			// コンストラクタ
+	virtual ~YashiroScene();// デストラクタ
 
 	virtual bool init();
 	virtual void update(float dt);

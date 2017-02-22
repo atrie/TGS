@@ -63,6 +63,7 @@ bool YashiroScene::init() {
 	this->addChild(label);
 
 	BraveAni = 0;//勇者のアニメーションを切り替えるための変数
+	EnemysTag = 0;//敵のタグ
 
 	//主人公(勇者は英語でBraveという)
 	BraveSp = Sprite::create("Brave0.png");
@@ -72,6 +73,13 @@ bool YashiroScene::init() {
 	//勇者アニメーション実行
 	this->BraveAnimation();
 
+	//
+	this->addEnemys();
+	this->addEnemys();
+	this->addEnemys();
+	this->addEnemys();
+	this->addEnemys();
+
 	// updateを毎フレーム実行するように登録する
 	this->scheduleUpdate();
 	return true;
@@ -80,8 +88,46 @@ bool YashiroScene::init() {
 //=========================================================================================================================
 // 毎フレーム呼ばれる処理
 //=========================================================================================================================
-void YashiroScene::update(float dt) {
-
+void YashiroScene::update(float dt) 
+{
+	for (Sprite* Enemys : _enemys)
+	{
+		//敵の最大値を入れる
+		int MaxEnemyTag = EnemysTag;
+		for (int count = 0; count < MaxEnemyTag; MaxEnemyTag--)
+		{
+			log("x座標：%i", MaxEnemyTag);
+			//敵ポジション取得
+			Sprite* SetEnemy = (Sprite *)this->getChildByTag(MaxEnemyTag);
+			Vec2 EnemysPos = SetEnemy->getPosition();
+			log("x座標：%f, y座標：%f", EnemysPos.x, EnemysPos.y);
+			float distance = BraveSp->getPosition().getDistance(EnemysPos);
+			log("kyori = %f", distance);
+			if (distance <= distance)
+			{
+				//より近い敵をセット(タグ取得)SetTagはint
+				SetTag = Enemys->getTag();
+				//一番近い敵を仮のスプライトに入れる
+				Sprite* SetTagEnemy = (Sprite *)this->getChildByTag(SetTag);
+				//選ばれた敵のポジション取得
+				EnemyPos = SetTagEnemy->getPosition();
+			}
+		}
+		//勇者の速度
+		float BraveSpeed = 2;
+		//勇者追尾
+		Point BravePoint = BraveSp->getPosition();//勇者の位置
+		float Angle = ccpToAngle(ccpSub(EnemyPos, BravePoint));//角度を求める ※EnemysPos=敵の位置
+		Angle = CC_RADIANS_TO_DEGREES(Angle);
+		Vec2 dir2 = Vec2(
+			cos(CC_DEGREES_TO_RADIANS(-Angle)),
+			sin(CC_DEGREES_TO_RADIANS(Angle))
+			);
+		// 現在の位置に移動方向＊移動速度を加算
+		Vec2 BraveVec2 = BraveSp->getPosition() + dir2 * BraveSpeed;
+		BraveSp->setPosition(BraveVec2);
+		break;
+	}
 }
 //=========================================================================================================================
 // プレイヤーのアニメーション
@@ -106,7 +152,7 @@ void YashiroScene::BraveAnimation()
 	}
 	animation->setDelayPerUnit(0.3f);			// 画像切り替えのディレイ
 	animation->setRestoreOriginalFrame(true);	// アニメーションが終わった際に最初のフレームに戻す
-												//スプライトのアクションを全部停止！
+	//スプライトのアクションを全部停止！
 	BraveSp->stopAllActions();
 	BraveSp->runAction(RepeatForever::create(Animate::create(animation)));
 }
@@ -120,18 +166,17 @@ Sprite* YashiroScene::addEnemys()
 
 	//敵の作成
 	Sprite* Enemys = Sprite::create("Enemy.png");
-	//parts->setTag(partsType);//タグを保存　なんのパーツを獲ったか判断するため
+	EnemysTag++;//タグ増やす
+	Enemys->setTag(EnemysTag);//タグを保存　なんのパーツを獲ったか判断するため
 
-	Size partsSize = Enemys->getContentSize();
 	//出現位置ランダム
-	//int num = (rand() % NUM_MAX) + 1;
-	float randparts = _engine() % 7 + 2;
-	float partsPosX = randparts / 10;
-	//float partsXPos = _engine() % static_cast<int>(visibleSize.width / 2); //X軸のランダム
-	float partsYPos = _engine() % static_cast<int>(visibleSize.height / 2);//Y軸のランダム
-	Enemys->setPosition(Vec2(visibleSize.width * partsPosX, partsYPos));//パーツの配置
+	//float randparts = _engine() % 7 + 2;
+	//float partsPosX = randparts / 10;
+	float partsXPos = _engine() % static_cast<int>(visibleSize.width); //X軸のランダム
+	float partsYPos = _engine() % static_cast<int>(visibleSize.height);//Y軸のランダム
+	Enemys->setPosition(Vec2(partsXPos, partsYPos));//パーツの配置
 	this->addChild(Enemys);
-	//_parts.pushBack(parts);//ベクターに追加
+	_enemys.pushBack(Enemys);//ベクターに追加
 	return Enemys;
 }
 //=========================================================================================================================
