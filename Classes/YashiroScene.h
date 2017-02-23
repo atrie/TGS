@@ -17,13 +17,16 @@ private:
 	// データ共有
 	static DataManager* datamanager;
 
-	cocos2d::Sprite* BraveSp;		//プレイヤーのスプライト
-
 	float generateRandom(float min, float max);//ランダム変数の初期化
+
+	bool DistanceOnOff;//距離を探す時に使う
 
 	int BraveAni;	//勇者のアニメーションを切り替えるための変数
 	int EnemysTag;	//敵のタグ
 	int SetTag;		//一番近い敵のタグ
+
+	float distance;	//距離１
+	float distance2;//距離２
 
 	void BraveAnimation();	//泳ぎアニメーション
 
@@ -31,7 +34,11 @@ private:
 
 	cocos2d::Sprite* addEnemys();//敵精製仮
 
-	cocos2d::Vec2 EnemyPos;//敵のポジション
+	cocos2d::Vec2 EnemyPos;		//敵のポジション
+
+	cocos2d::Sprite* BraveSp;	//プレイヤーのスプライト
+
+	cocos2d::Rect BraveRect;	//勇者の短形
 
 	CC_SYNTHESIZE(std::mt19937, _engine, Engine);//ランダムの変数
 protected:

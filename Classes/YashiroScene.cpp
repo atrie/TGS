@@ -9,6 +9,8 @@ using namespace cocos2d;
 
 DataManager* YashiroScene::datamanager;
 
+static int ENEMY_SPAWN_RATE = 50;//敵の出現頻度
+
 //=========================================================================================================================
 // LayerをSceneに貼り付けて返すメソッド
 //=========================================================================================================================
@@ -62,23 +64,22 @@ bool YashiroScene::init() {
 	label->setPosition(Vec2(visibleSize.width /2, visibleSize.height / 2));
 	this->addChild(label);
 
+	DistanceOnOff = true;//距離を探す時に使う
+
 	BraveAni = 0;//勇者のアニメーションを切り替えるための変数
 	EnemysTag = 0;//敵のタグ
+	distance2 = 10000000000000000;
 
 	//主人公(勇者は英語でBraveという)
 	BraveSp = Sprite::create("Brave0.png");
 	BraveSp->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	BraveSp->setScale(0.5f);
 	this->addChild(BraveSp);
 
 	//勇者アニメーション実行
 	this->BraveAnimation();
 
-	//
-	this->addEnemys();
-	this->addEnemys();
-	this->addEnemys();
-	this->addEnemys();
-	this->addEnemys();
+	//this->addEnemys();
 
 	// updateを毎フレーム実行するように登録する
 	this->scheduleUpdate();
@@ -90,6 +91,14 @@ bool YashiroScene::init() {
 //=========================================================================================================================
 void YashiroScene::update(float dt) 
 {
+	//ランダムの数値
+	int randam = _engine() % ENEMY_SPAWN_RATE;
+	//randamが0になったら敵生成
+	if (randam == 0)
+	{
+		this->addEnemys();
+	}
+
 	for (Sprite* Enemys : _enemys)
 	{
 		//敵の最大値を入れる
@@ -101,31 +110,63 @@ void YashiroScene::update(float dt)
 			Sprite* SetEnemy = (Sprite *)this->getChildByTag(MaxEnemyTag);
 			Vec2 EnemysPos = SetEnemy->getPosition();
 			log("x座標：%f, y座標：%f", EnemysPos.x, EnemysPos.y);
-			float distance = BraveSp->getPosition().getDistance(EnemysPos);
-			log("kyori = %f", distance);
-			if (distance <= distance)
+
+			//勇者の位置
+			Vec2 BravePoint2 = BraveSp->getPosition();
+			//敵の速度
+			float EnemysSpeed = 2;
+			//勇者追尾
+			float Angle2 = ccpToAngle(ccpSub(BravePoint2, EnemysPos));//角度を求める ※EnemysPos=敵の位置
+			Angle2 = CC_RADIANS_TO_DEGREES(Angle2);
+			Vec2 dir2 = Vec2(
+				cos(CC_DEGREES_TO_RADIANS(-Angle2)),
+				sin(CC_DEGREES_TO_RADIANS(Angle2))
+				);
+			Vec2 EnemysVec2 = SetEnemy->getPosition() + dir2 * EnemysSpeed;
+			SetEnemy->setPosition(EnemysVec2);
+
+			log("MaxEnemyTagMax = %d", MaxEnemyTag);
+			distance = BraveSp->getPosition().getDistance(EnemysPos);
+			if (distance < distance2)
 			{
+				log("kyori = %f", distance);
+				log("kyori2 = %f", distance2);
+
+				distance2 = distance;
+
 				//より近い敵をセット(タグ取得)SetTagはint
 				SetTag = Enemys->getTag();
+
+				log("MaxEnemyTagMin = %d", MaxEnemyTag);
 				//一番近い敵を仮のスプライトに入れる
-				Sprite* SetTagEnemy = (Sprite *)this->getChildByTag(SetTag);
+				Sprite* SetTagEnemy = (Sprite *)this->getChildByTag(MaxEnemyTag);
 				//選ばれた敵のポジション取得
 				EnemyPos = SetTagEnemy->getPosition();
 			}
 		}
 		//勇者の速度
-		float BraveSpeed = 2;
+		float BraveSpeed = 1;
 		//勇者追尾
-		Point BravePoint = BraveSp->getPosition();//勇者の位置
+		Vec2 BravePoint = BraveSp->getPosition();//勇者の位置
 		float Angle = ccpToAngle(ccpSub(EnemyPos, BravePoint));//角度を求める ※EnemysPos=敵の位置
 		Angle = CC_RADIANS_TO_DEGREES(Angle);
-		Vec2 dir2 = Vec2(
+		Vec2 dir = Vec2(
 			cos(CC_DEGREES_TO_RADIANS(-Angle)),
 			sin(CC_DEGREES_TO_RADIANS(Angle))
 			);
 		// 現在の位置に移動方向＊移動速度を加算
-		Vec2 BraveVec2 = BraveSp->getPosition() + dir2 * BraveSpeed;
+		Vec2 BraveVec2 = BraveSp->getPosition() + dir * BraveSpeed;
 		BraveSp->setPosition(BraveVec2);
+
+		//----------------------
+		//ここから当たり判定
+		//----------------------
+		BraveRect = BraveSp->getBoundingBox();//勇者の短形を取り出す
+		//勇者と敵の当たり判定
+		if (BraveRect.containsPoint(EnemyPos))
+		{
+			log("ON");
+		}
 		break;
 	}
 }
@@ -168,7 +209,7 @@ Sprite* YashiroScene::addEnemys()
 	Sprite* Enemys = Sprite::create("Enemy.png");
 	EnemysTag++;//タグ増やす
 	Enemys->setTag(EnemysTag);//タグを保存　なんのパーツを獲ったか判断するため
-
+	Enemys->setScale(0.5f);
 	//出現位置ランダム
 	//float randparts = _engine() % 7 + 2;
 	//float partsPosX = randparts / 10;
