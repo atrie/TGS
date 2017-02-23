@@ -6,7 +6,8 @@
 		このクラスでは
 		・敵と勇者（またはお母さん）同士の当たり判定
 		・敵同士の当たり判定
-		の２つの判定をするための関数があります。
+		・勇者とお母さんの当たり判定
+		の３つの判定をするための関数があります。
    使い方例
 		HitCheck check;
 		if (check.EnemyAndChara(敵の情報をVector<Sprite*>で, 勇者（またはお母さん）の情報をSprite*で) == true) {
@@ -60,5 +61,16 @@ bool HitCheck::EnemyAndEnemy(Vector<cocos2d::Sprite*> spCon) {
 		}
 	}
 	// 敵同士が重なっていなければfalseを返す
+	return false;
+}
+//=========================================================================================================================
+// 当たり判定：勇者とお母さんの当たり判定
+//=========================================================================================================================
+bool HitCheck::HeroAndMother(Sprite* hero, Sprite* mother) {
+	int disMax = 64;
+	float distance = hero->getPosition().getDistance(mother->getPosition());
+	if (distance <= disMax) {
+		return true;
+	}
 	return false;
 }
