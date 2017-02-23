@@ -20,6 +20,7 @@
   //================================================================================================================
   // バージョン
   //		1.0 クラス生成                              2017/02/21 戸軽隆二 
+  //		1.1 勇者ｘ母のあたり判定追加                2017/02/23 戸軽隆二 
   //================================================================================================================
 #include "HitCheck.h"
 using namespace cocos2d;
@@ -66,9 +67,9 @@ bool HitCheck::EnemyAndEnemy(Vector<cocos2d::Sprite*> spCon) {
 //=========================================================================================================================
 // 当たり判定：勇者とお母さんの当たり判定
 //=========================================================================================================================
-bool HitCheck::HeroAndMother(Sprite* hero, Sprite* mother) {
+bool HitCheck::HeroAndMother(Sprite* her, Sprite* mothe) {
 	int disMax = 64;
-	float distance = hero->getPosition().getDistance(mother->getPosition());
+	float distance = her->getPosition().getDistance(mothe->getPosition());
 	if (distance <= disMax) {
 		return true;
 	}
