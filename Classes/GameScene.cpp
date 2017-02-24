@@ -53,9 +53,12 @@ bool GameScene::init() {
 	label->setPosition(Vec2(visibleSize.width /2, visibleSize.height / 2));
 	this->addChild(label);
 
+	// Reaourcesフォルダからの相対パスを指定した画像の読み込み
+	Sprite::create("img/chara.png");
+
 	// ベースとなるスプライトを作成(アニメーションがループするので元画像はいらないはず)
 	auto Sp = Sprite::create();
-	Sp->setPosition(Vec2(visibleSize.width / 2.0, visibleSize.height / 2.0));
+	Sp->setPosition(Vec2(visibleSize.width / 4.0, visibleSize.height / 4.0));
 
 	// コマをスプライトフレーム配列(frames)に格納する
 	Vector< SpriteFrame * > frames;
@@ -83,6 +86,15 @@ bool GameScene::init() {
 
 	// シーンに追加
 	this->addChild(Sp);
+
+	// 画像からSpriteオブジェクトを作成
+	auto bgSprite = Sprite::create("chara.png");
+
+	// 表示座標を位置をセット(画面サイズが640x1024の場合中央に表示される)
+	bgSprite->setPosition(Vec2(640 / 2.0, 1024 / 2.0));
+
+	// スプライトをシーンへ登録 
+	this->addChild(bgSprite);
 
 	//sp->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	//this->addChild(sp);
