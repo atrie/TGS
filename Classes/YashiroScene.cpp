@@ -68,7 +68,7 @@ bool YashiroScene::init() {
 
 	BraveAni = 0;//—EŽÒ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ðØ‚è‘Ö‚¦‚é‚½‚ß‚Ì•Ï”
 	EnemysTag = 0;//“G‚Ìƒ^ƒO
-	distance2 = 10000000000000000;
+	distance2 = 10000000000;
 
 	//ŽålŒö(—EŽÒ‚Í‰pŒê‚ÅBrave‚Æ‚¢‚¤)
 	BraveSp = Sprite::create("Brave0.png");
@@ -79,7 +79,7 @@ bool YashiroScene::init() {
 	//—EŽÒƒAƒjƒ[ƒVƒ‡ƒ“ŽÀs
 	this->BraveAnimation();
 
-	//this->addEnemys();
+	this->addEnemys();
 
 	// update‚ð–ˆƒtƒŒ[ƒ€ŽÀs‚·‚é‚æ‚¤‚É“o˜^‚·‚é
 	this->scheduleUpdate();
@@ -96,7 +96,7 @@ void YashiroScene::update(float dt)
 	//randam‚ª0‚É‚È‚Á‚½‚ç“G¶¬
 	if (randam == 0)
 	{
-		this->addEnemys();
+		//this->addEnemys();
 	}
 
 	for (Sprite* Enemys : _enemys)
@@ -116,7 +116,7 @@ void YashiroScene::update(float dt)
 			//“G‚Ì‘¬“x
 			float EnemysSpeed = 2;
 			//—EŽÒ’Ç”ö
-			float Angle2 = ccpToAngle(ccpSub(BravePoint2, EnemysPos));//Šp“x‚ð‹‚ß‚é ¦EnemysPos=“G‚ÌˆÊ’u
+			Angle2 = ccpToAngle(ccpSub(BravePoint2, EnemysPos));//Šp“x‚ð‹‚ß‚é ¦EnemysPos=“G‚ÌˆÊ’u
 			Angle2 = CC_RADIANS_TO_DEGREES(Angle2);
 			Vec2 dir2 = Vec2(
 				cos(CC_DEGREES_TO_RADIANS(-Angle2)),
@@ -124,8 +124,8 @@ void YashiroScene::update(float dt)
 				);
 			Vec2 EnemysVec2 = SetEnemy->getPosition() + dir2 * EnemysSpeed;
 			SetEnemy->setPosition(EnemysVec2);
-
 			log("MaxEnemyTagMax = %d", MaxEnemyTag);
+
 			distance = BraveSp->getPosition().getDistance(EnemysPos);
 			if (distance < distance2)
 			{
@@ -156,17 +156,28 @@ void YashiroScene::update(float dt)
 			);
 		// Œ»Ý‚ÌˆÊ’u‚ÉˆÚ“®•ûŒü–ˆÚ“®‘¬“x‚ð‰ÁŽZ
 		Vec2 BraveVec2 = BraveSp->getPosition() + dir * BraveSpeed;
-		BraveSp->setPosition(BraveVec2);
+		if (DistanceOnOff) { BraveSp->setPosition(BraveVec2); }
 
 		//----------------------
 		//‚±‚±‚©‚ç“–‚½‚è”»’è
 		//----------------------
 		BraveRect = BraveSp->getBoundingBox();//—EŽÒ‚Ì’ZŒ`‚ðŽæ‚èo‚·
+		Rect EnemyRect = Enemys->getBoundingBox();//—EŽÒ‚Ì’ZŒ`‚ðŽæ‚èo‚·
 		//—EŽÒ‚Æ“G‚Ì“–‚½‚è”»’è
-		if (BraveRect.containsPoint(EnemyPos))
+		if (BraveRect.intersectsRect(EnemyRect))
 		{
 			log("ON");
+			log("Player = %f kakudo", Angle);
+			log("Enemy  = %f kakudo", Angle2);
+			//CallFunc* callback = CallFunc::create([&](){DistanceOnOff = false;});
+			//CallFunc* callback2 = CallFunc::create([&]() {DistanceOnOff = true; });
+			//Sequence* sequence = Sequence::create(callback, OutBrave, callback2, NULL);
+			MoveTo* OutBrave = MoveTo::create(0.2, Vec2(BraveSp->getPosition().x + 5, BraveSp->getPosition().y + 5));
+			BraveSp->runAction(OutBrave);
+			MoveTo* OutEnemy = MoveTo::create(0.2, Vec2(Enemys->getPosition().x - 5, Enemys->getPosition().y - 5));
+			Enemys->runAction(OutEnemy);
 		}
+
 		break;
 	}
 }

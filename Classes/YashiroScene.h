@@ -27,6 +27,7 @@ private:
 
 	float distance;	//距離１
 	float distance2;//距離２
+	float Angle2;
 
 	void BraveAnimation();	//泳ぎアニメーション
 
