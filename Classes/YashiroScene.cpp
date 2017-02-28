@@ -68,7 +68,7 @@ bool YashiroScene::init() {
 
 	BraveAni = 0;//勇者のアニメーションを切り替えるための変数
 	EnemysTag = 0;//敵のタグ
-	distance2 = 10000000000;
+	distance2 = 10000000000;//初期の値
 
 	//主人公(勇者は英語でBraveという)
 	BraveSp = Sprite::create("Brave0.png");
@@ -79,6 +79,8 @@ bool YashiroScene::init() {
 	//勇者アニメーション実行
 	this->BraveAnimation();
 
+	this->addEnemys();
+	this->addEnemys();
 	this->addEnemys();
 
 	// updateを毎フレーム実行するように登録する
@@ -99,10 +101,12 @@ void YashiroScene::update(float dt)
 		//this->addEnemys();
 	}
 
+	//配列のをEnemysとしてる
 	for (Sprite* Enemys : _enemys)
 	{
-		//敵の最大値を入れる
+		//敵の最大値を入れる MaxEnemyTag = 敵の数みたいなもの
 		int MaxEnemyTag = EnemysTag;
+		//敵の数だけ繰り返す
 		for (int count = 0; count < MaxEnemyTag; MaxEnemyTag--)
 		{
 			log("x座標：%i", MaxEnemyTag);
@@ -114,7 +118,7 @@ void YashiroScene::update(float dt)
 			//勇者の位置
 			Vec2 BravePoint2 = BraveSp->getPosition();
 			//敵の速度
-			float EnemysSpeed = 2;
+			float EnemysSpeed = 1;
 			//勇者追尾
 			Angle2 = ccpToAngle(ccpSub(BravePoint2, EnemysPos));//角度を求める ※EnemysPos=敵の位置
 			Angle2 = CC_RADIANS_TO_DEGREES(Angle2);
@@ -122,15 +126,18 @@ void YashiroScene::update(float dt)
 				cos(CC_DEGREES_TO_RADIANS(-Angle2)),
 				sin(CC_DEGREES_TO_RADIANS(Angle2))
 				);
-			Vec2 EnemysVec2 = SetEnemy->getPosition() + dir2 * EnemysSpeed;
-			SetEnemy->setPosition(EnemysVec2);
+			// BraveVec2 = 勇者のポジション
+			Vec2 BraveVec2 = SetEnemy->getPosition() + dir2 * EnemysSpeed;
+			SetEnemy->setPosition(BraveVec2);
 			log("MaxEnemyTagMax = %d", MaxEnemyTag);
-
+			// distance = 勇者と選択された敵の距離
 			distance = BraveSp->getPosition().getDistance(EnemysPos);
+			// 前選んだ敵とどちらが近いかを調べる
 			if (distance < distance2)
 			{
 				log("kyori = %f", distance);
 				log("kyori2 = %f", distance2);
+				//近ければ代入
 
 				distance2 = distance;
 
@@ -144,8 +151,10 @@ void YashiroScene::update(float dt)
 				EnemyPos = SetTagEnemy->getPosition();
 			}
 		}
+
 		//勇者の速度
 		float BraveSpeed = 1;
+
 		//勇者追尾
 		Vec2 BravePoint = BraveSp->getPosition();//勇者の位置
 		float Angle = ccpToAngle(ccpSub(EnemyPos, BravePoint));//角度を求める ※EnemysPos=敵の位置
@@ -162,9 +171,10 @@ void YashiroScene::update(float dt)
 		//ここから当たり判定
 		//----------------------
 		BraveRect = BraveSp->getBoundingBox();//勇者の短形を取り出す
-		Rect EnemyRect = Enemys->getBoundingBox();//勇者の短形を取り出す
+		//Rect EnemyRect = Enemys->getBoundingBox();//勇者の短形を取り出す
+		Vec2 EnemyPosPos = Enemys->getPosition();// 敵のポジション取得
 		//勇者と敵の当たり判定
-		if (BraveRect.intersectsRect(EnemyRect))
+		if (BraveRect.containsPoint(EnemyPosPos))
 		{
 			log("ON");
 			log("Player = %f kakudo", Angle);
@@ -172,13 +182,21 @@ void YashiroScene::update(float dt)
 			//CallFunc* callback = CallFunc::create([&](){DistanceOnOff = false;});
 			//CallFunc* callback2 = CallFunc::create([&]() {DistanceOnOff = true; });
 			//Sequence* sequence = Sequence::create(callback, OutBrave, callback2, NULL);
-			MoveTo* OutBrave = MoveTo::create(0.2, Vec2(BraveSp->getPosition().x + 5, BraveSp->getPosition().y + 5));
+			MoveTo* OutBrave = MoveTo::create(0.4, Vec2(BraveSp->getPosition().x + 15, BraveSp->getPosition().y + 15));
 			BraveSp->runAction(OutBrave);
-			MoveTo* OutEnemy = MoveTo::create(0.2, Vec2(Enemys->getPosition().x - 5, Enemys->getPosition().y - 5));
+			MoveTo* OutEnemy = MoveTo::create(0.8, Vec2(Enemys->getPosition().x - 15, Enemys->getPosition().y - 15));
 			Enemys->runAction(OutEnemy);
 		}
-
 		break;
+		//// キャラクター同士の当たり判定
+		//HitCheck check;
+		//if (check.EnemyAndChara(dataManager->GetEnemyCon(), player) == true) {
+		//	CCLOG("Enemy Hit !!!!");
+		//}
+		//else if (check.EnemyAndEnemy(dataManager->GetEnemyCon()) == true)
+		//	CCLOG("Enemy OverLap !!!!");
+		//else
+		//	CCLOG("No Hit...");
 	}
 }
 //=========================================================================================================================
